@@ -4,6 +4,9 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
     public float speed = 15.0f;
     public float padding = 1.0f;
+    public GameObject projectile;
+    public float projectileSpeed = 0.0f;
+    public float firingRate = 0.2f;
 
     private float xMin;
     private float xMax;
@@ -14,9 +17,25 @@ public class PlayerController : MonoBehaviour {
         Vector3 rightMost = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, distance));
         xMin = leftMost.x + padding;
         xMax = rightMost.x - padding;
+    }
+    
+    void Fire()
+    {
+        GameObject beam = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
+        beam.GetComponent<Rigidbody2D>().velocity = new Vector3(0, projectileSpeed, 0);
     }	
 
 	void Update () {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            InvokeRepeating("Fire", 0.000001f, firingRate);
+        }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            CancelInvoke("Fire");
+        }
+
 	    if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             transform.position += Vector3.left * speed * Time.deltaTime;
